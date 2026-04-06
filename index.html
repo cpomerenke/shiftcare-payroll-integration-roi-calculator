@@ -160,7 +160,7 @@
     border-radius: var(--radius);
     padding: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: var(--shadow);
     transition: background 0.3s, border-color 0.3s;
   }
@@ -258,6 +258,8 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 10px 12px;
+    overflow: visible;
+    position: relative;
   }
 
   .stat-pill-label { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
@@ -291,7 +293,7 @@
     border-radius: var(--radius);
     padding: 20px 28px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: 14px;
     box-shadow: var(--shadow);
     transition: background 0.3s;
@@ -317,7 +319,7 @@
     gap: 0;
   }
 
-  .result-metric { text-align: center; padding: 8px 16px; }
+  .result-metric { text-align: center; padding: 8px 16px; position: relative; overflow: visible; }
   .result-metric-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
   .result-metric-value {
     font-family: 'Syne', sans-serif;
@@ -606,7 +608,7 @@
     border-radius: var(--radius);
     padding: 20px;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: var(--shadow);
     transition: background 0.3s, border-color 0.3s;
   }
@@ -704,6 +706,8 @@
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 10px 12px;
+    overflow: visible;
+    position: relative;
   }
 
   .stat-pill-label { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 2px; }
@@ -865,7 +869,12 @@
   .has-tooltip {
     position: relative;
     cursor: help;
-    display: inline-block;
+    display: block;
+  }
+  .stat-pill-value.has-tooltip,
+  .result-metric-value.has-tooltip {
+    display: block;
+    position: relative;
   }
   .has-tooltip::after {
     content: ' ⓘ';
@@ -878,12 +887,12 @@
     visibility: hidden;
     opacity: 0;
     position: absolute;
-    z-index: 200;
+    z-index: 9999;
     bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
-    background: var(--text);
-    color: var(--bg);
+    background: #1A1625;
+    color: #F0EFF8;
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 11.5px;
@@ -900,7 +909,7 @@
     white-space: normal;
     text-align: left;
   }
-  .tooltip-box strong { font-weight: 700; display: block; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 4px; }
+  .tooltip-box strong { font-weight: 700; display: block; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px; color: #fff; }
   .tooltip-box .calc-line { display: flex; justify-content: space-between; gap: 12px; margin-top: 3px; font-size: 11px; opacity: 0.85; }
   .tooltip-box .calc-line span:last-child { font-weight: 600; opacity: 1; }
   .tooltip-box::after {
@@ -909,7 +918,7 @@
     top: 100%; left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: var(--text);
+    border-top-color: #1A1625;
   }
   .has-tooltip:hover .tooltip-box {
     visibility: visible;
@@ -923,6 +932,129 @@
   .tooltip-right .tooltip-box { left: auto; right: 0; transform: translateX(0); }
   .tooltip-right .tooltip-box::after { left: auto; right: 20px; }
   .tooltip-right:hover .tooltip-box { transform: translateX(0) translateY(0); }
+
+  /* ── Export / Share button ── */
+  .export-btn {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    width: 100%;
+    margin-top: 16px;
+    background: var(--eh-purple);
+    border: none;
+    border-radius: 10px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 13px; font-weight: 600;
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(139,79,216,0.3);
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    user-select: none;
+  }
+  .export-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 18px rgba(139,79,216,0.45); }
+  .export-btn:active { transform: translateY(0); }
+
+  /* ── Share modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%; max-width: 460px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    position: relative;
+  }
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--surface2); border: none;
+    width: 28px; height: 28px; border-radius: 50%;
+    cursor: pointer; font-size: 14px; color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .modal-close:hover { color: var(--text); background: var(--surface3); }
+
+  .share-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.15s;
+    background: var(--surface2);
+  }
+  .share-option:hover { border-color: var(--eh-purple); background: rgba(139,79,216,0.06); }
+  .share-option:last-child { margin-bottom: 0; }
+  .share-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .share-icon.purple { background: rgba(139,79,216,0.12); }
+  .share-icon.blue   { background: rgba(10,158,201,0.12); }
+  .share-icon.green  { background: rgba(0,168,118,0.12); }
+  .share-option-text { flex: 1; }
+  .share-option-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .share-option-desc  { font-size: 11px; color: var(--muted); }
+
+  .snapshot-summary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .snapshot-summary strong { color: var(--text); }
+
+  .copy-link-row {
+    display: flex; gap: 8px; margin-top: 10px;
+  }
+  .copy-link-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: text;
+    outline: none;
+  }
+  .copy-btn {
+    background: var(--eh-purple);
+    color: #fff; border: none;
+    border-radius: 8px; padding: 8px 14px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.15s;
+  }
+  .copy-btn:hover { opacity: 0.85; }
+
+  @keyframes fadeIn { from { opacity:0; transform: scale(0.96); } to { opacity:1; transform: scale(1); } }
+  .modal-overlay.open .modal { animation: fadeIn 0.2s ease; }
 </style>
 </head>
 <body>
@@ -1053,6 +1185,11 @@
         <div class="gap-item"><div class="gap-dot green"></div>Integrated onboarding, contracts & HR tools</div>
         <div class="gap-item"><div class="gap-dot green"></div>ShiftCare timesheet sync — no double handling</div>
       </div>
+
+      <button class="export-btn" onclick="openShareModal()" aria-label="Share this calculation">
+        🔗 Share this calculation
+      </button>
+
     </div>
 
   </div>
@@ -1168,10 +1305,21 @@
   const fmtPct = (n) => Math.round(n) + '%';
 
   function animateVal(el, newText) {
-    el.style.animation = 'none';
-    void el.offsetWidth;
-    el.textContent = newText;
-    el.style.animation = 'countUp 0.3s ease forwards';
+    // Find or create the text span (leaves tooltip-box child intact)
+    let span = el.querySelector('.val-text');
+    if (!span) {
+      // First run: wrap existing text node in a span
+      span = document.createElement('span');
+      span.className = 'val-text';
+      // Move all text nodes into the span
+      const nodes = Array.from(el.childNodes).filter(n => n.nodeType === 3);
+      nodes.forEach(n => n.remove());
+      el.insertBefore(span, el.firstChild);
+    }
+    span.style.animation = 'none';
+    void span.offsetWidth;
+    span.textContent = newText;
+    span.style.animation = 'countUp 0.3s ease forwards';
   }
 
   function setTT(id, html) {
@@ -1328,8 +1476,104 @@
     label.textContent = isDark ? '☀️ Light mode' : '🌙 Dark mode';
   }
 
+
+  function openShareModal() {
+    // Build snapshot summary from current values
+    const emp = document.getElementById('empSlider').value;
+    const hours = document.getElementById('hoursSlider').value;
+    const rate = document.getElementById('rateSlider').value;
+    const reduction = document.getElementById('reductionSlider').value;
+    const saving = document.getElementById('annualSaving').querySelector('.val-text')?.textContent || document.getElementById('annualSaving').textContent;
+    const hoursSaved = document.getElementById('hoursSaved').querySelector('.val-text')?.textContent || document.getElementById('hoursSaved').textContent;
+    const roi = document.getElementById('roiVal').querySelector('.val-text')?.textContent || document.getElementById('roiVal').textContent;
+
+    document.getElementById('snapshotSummary').innerHTML =
+      `<strong>${emp} employees</strong> · <strong>${hours} hrs/week</strong> · <strong>$${rate}/hr</strong> · <strong>${reduction}% time reduction</strong><br>` +
+      `Annual saving: <strong>${saving}</strong> &nbsp;·&nbsp; Hours freed: <strong>${hoursSaved}</strong> &nbsp;·&nbsp; ROI: <strong>${roi}</strong>`;
+
+    document.getElementById('copyLinkRow').style.display = 'none';
+    document.getElementById('shareModal').classList.add('open');
+  }
+
+  function closeShareModal() {
+    document.getElementById('shareModal').classList.remove('open');
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('shareModal')) closeShareModal();
+  }
+
+  function printPage() {
+    closeShareModal();
+    setTimeout(() => window.print(), 200);
+  }
+
+  function copyShareableLink() {
+    const emp = document.getElementById('empSlider').value;
+    const hours = document.getElementById('hoursSlider').value;
+    const rate = document.getElementById('rateSlider').value;
+    const reduction = document.getElementById('reductionSlider').value;
+    const params = new URLSearchParams({ emp, hours, rate, reduction });
+    const url = window.location.href.split('?')[0] + '?' + params.toString();
+    document.getElementById('shareUrl').value = url;
+    document.getElementById('copyLinkRow').style.display = 'flex';
+  }
+
+  function doCopy(e) {
+    e.stopPropagation();
+    const input = document.getElementById('shareUrl');
+    input.select();
+    navigator.clipboard.writeText(input.value).then(() => {
+      const btn = e.target;
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+
+  // Load params from URL on page load
+  function loadFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('emp'))       { document.getElementById('empSlider').value = params.get('emp'); }
+    if (params.get('hours'))     { document.getElementById('hoursSlider').value = params.get('hours'); }
+    if (params.get('rate'))      { document.getElementById('rateSlider').value = params.get('rate'); }
+    if (params.get('reduction')) { document.getElementById('reductionSlider').value = params.get('reduction'); }
+  }
+
   // Init
+  loadFromURL();
   update();
 </script>
+
+<!-- ── SHARE / EXPORT MODAL ── -->
+<div class="modal-overlay" id="shareModal" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeShareModal()">✕</button>
+    <div class="modal-title">Export &amp; Share</div>
+    <div class="modal-sub">Share your ROI calculation with your team or save it for later.</div>
+
+    <div class="snapshot-summary" id="snapshotSummary">—</div>
+
+    <div class="share-option" onclick="printPage()">
+      <div class="share-icon blue">🖨️</div>
+      <div class="share-option-text">
+        <div class="share-option-label">Print / Save as PDF</div>
+        <div class="share-option-desc">Print the calculator or save to PDF via your browser's print dialog</div>
+      </div>
+    </div>
+
+    <div class="share-option" onclick="copyShareableLink()">
+      <div class="share-icon green">🔗</div>
+      <div class="share-option-text">
+        <div class="share-option-label">Copy shareable link</div>
+        <div class="share-option-desc">Generates a URL with your inputs encoded — paste and share directly</div>
+      </div>
+      <div class="copy-link-row" id="copyLinkRow" style="display:none; width:100%; margin-top:10px;">
+        <input class="copy-link-input" id="shareUrl" readonly>
+        <button class="copy-btn" onclick="doCopy(event)">Copy</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
