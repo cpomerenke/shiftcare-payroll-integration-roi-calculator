@@ -860,6 +860,69 @@
   .role-btn:hover { border-color: var(--eh-purple); color: var(--text); }
   .role-btn.active { background: rgba(139,79,216,0.1); border-color: var(--eh-purple); color: var(--eh-purple); }
   .role-btn .role-rate { font-weight: 700; margin-left: 3px; }
+
+  /* ── Tooltips ── */
+  .has-tooltip {
+    position: relative;
+    cursor: help;
+    display: inline-block;
+  }
+  .has-tooltip::after {
+    content: ' ⓘ';
+    font-size: 10px;
+    opacity: 0.4;
+    vertical-align: super;
+    font-family: sans-serif;
+  }
+  .tooltip-box {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    z-index: 200;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 11.5px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    white-space: nowrap;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    pointer-events: none;
+    transition: opacity 0.18s, transform 0.18s;
+    transform: translateX(-50%) translateY(4px);
+    min-width: 220px;
+    max-width: 300px;
+    white-space: normal;
+    text-align: left;
+  }
+  .tooltip-box strong { font-weight: 700; display: block; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 4px; }
+  .tooltip-box .calc-line { display: flex; justify-content: space-between; gap: 12px; margin-top: 3px; font-size: 11px; opacity: 0.85; }
+  .tooltip-box .calc-line span:last-child { font-weight: 600; opacity: 1; }
+  .tooltip-box::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--text);
+  }
+  .has-tooltip:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  /* keep tooltip on screen when near edges */
+  .tooltip-left .tooltip-box { left: 0; transform: translateX(0); }
+  .tooltip-left .tooltip-box::after { left: 20px; }
+  .tooltip-left:hover .tooltip-box { transform: translateX(0) translateY(0); }
+  .tooltip-right .tooltip-box { left: auto; right: 0; transform: translateX(0); }
+  .tooltip-right .tooltip-box::after { left: auto; right: 20px; }
+  .tooltip-right:hover .tooltip-box { transform: translateX(0) translateY(0); }
 </style>
 </head>
 <body>
@@ -922,15 +985,15 @@
       <div class="stat-row">
         <div class="stat-pill">
           <div class="stat-pill-label">Weekly cost</div>
-          <div class="stat-pill-value red" id="weeklyManual">—</div>
+          <div class="stat-pill-value red has-tooltip" id="weeklyManual">—<div class="tooltip-box" id="tt-weeklyManual"></div></div>
         </div>
         <div class="stat-pill">
           <div class="stat-pill-label">Annual cost</div>
-          <div class="stat-pill-value red" id="annualManual">—</div>
+          <div class="stat-pill-value red has-tooltip" id="annualManual">—<div class="tooltip-box" id="tt-annualManual"></div></div>
         </div>
         <div class="stat-pill">
           <div class="stat-pill-label">Hours/year</div>
-          <div class="stat-pill-value gold" id="hoursYear">—</div>
+          <div class="stat-pill-value gold has-tooltip" id="hoursYear">—<div class="tooltip-box" id="tt-hoursYear"></div></div>
         </div>
       </div>
 
@@ -970,15 +1033,15 @@
       <div class="stat-row" style="margin-top:24px;">
         <div class="stat-pill">
           <div class="stat-pill-label">Platform cost/yr</div>
-          <div class="stat-pill-value purple" id="ehPlatformCost">—</div>
+          <div class="stat-pill-value purple has-tooltip" id="ehPlatformCost">—<div class="tooltip-box" id="tt-ehPlatformCost"></div></div>
         </div>
         <div class="stat-pill">
           <div class="stat-pill-label">Remaining labour</div>
-          <div class="stat-pill-value purple" id="ehLabourCost">—</div>
+          <div class="stat-pill-value purple has-tooltip" id="ehLabourCost">—<div class="tooltip-box" id="tt-ehLabourCost"></div></div>
         </div>
         <div class="stat-pill">
           <div class="stat-pill-label">Total annual cost</div>
-          <div class="stat-pill-value green" id="ehTotalCost">—</div>
+          <div class="stat-pill-value green has-tooltip" id="ehTotalCost">—<div class="tooltip-box" id="tt-ehTotalCost"></div></div>
         </div>
       </div>
 
@@ -1000,19 +1063,19 @@
       <div class="result-metrics-row">
         <div class="result-metric">
           <div class="result-metric-label">Annual saving</div>
-          <div class="result-metric-value" id="annualSaving" style="color: var(--green);">—</div>
+          <div class="result-metric-value has-tooltip" id="annualSaving" style="color: var(--green);">—<div class="tooltip-box" id="tt-annualSaving"></div></div>
           <div class="result-metric-sub">in labour cost recovered</div>
         </div>
         <div class="result-divider"></div>
         <div class="result-metric">
           <div class="result-metric-label">Hours freed per year</div>
-          <div class="result-metric-value" id="hoursSaved" style="color: var(--teal);">—</div>
+          <div class="result-metric-value has-tooltip" id="hoursSaved" style="color: var(--teal);">—<div class="tooltip-box" id="tt-hoursSaved"></div></div>
           <div class="result-metric-sub">returned to your team</div>
         </div>
         <div class="result-divider"></div>
         <div class="result-metric">
           <div class="result-metric-label">ROI</div>
-          <div class="result-metric-value" id="roiVal" style="color: var(--eh-purple);">—</div>
+          <div class="result-metric-value has-tooltip tooltip-right" id="roiVal" style="color: var(--eh-purple);">—<div class="tooltip-box" id="tt-roiVal"></div></div>
           <div class="result-metric-sub">return on platform investment</div>
         </div>
       </div>
@@ -1111,7 +1174,74 @@
     el.style.animation = 'countUp 0.3s ease forwards';
   }
 
-  function update() {
+  function setTT(id, html) {
+    const el = document.getElementById('tt-' + id);
+    if (el) el.innerHTML = html;
+  }
+
+  function calcLine(label, val) {
+    return `<div class="calc-line"><span>${label}</span><span>${val}</span></div>`;
+  }
+
+  function updateTooltips(emp, hours, rate, reduction, ehPrice, weeklyManual, annualManual, hoursYear, riskBuffer, toolsCost, totalManual, ehPlatformCost, ehHoursWeek, ehLabourCost, ehTotal, saving, hoursSaved, roi) {
+    setTT('weeklyManual',
+      `<strong>Weekly payroll cost</strong>` +
+      calcLine('Hours per week', hours + ' hrs') +
+      calcLine('× Hourly rate', '$' + rate) +
+      calcLine('= Weekly cost', fmt(weeklyManual))
+    );
+    setTT('annualManual',
+      `<strong>Annual labour cost</strong>` +
+      calcLine('Weekly cost', fmt(weeklyManual)) +
+      calcLine('× 52 weeks', fmt(annualManual))
+    );
+    setTT('hoursYear',
+      `<strong>Total hours per year</strong>` +
+      calcLine('Hours per week', hours + ' hrs') +
+      calcLine('× 52 weeks', hoursYear + ' hrs')
+    );
+    setTT('ehPlatformCost',
+      `<strong>EH platform licence</strong>` +
+      calcLine('Employees', emp) +
+      calcLine('× $' + ehPrice + '/emp/month', '') +
+      calcLine('× 12 months', fmt(ehPlatformCost))
+    );
+    setTT('ehLabourCost',
+      `<strong>Remaining labour cost</strong>` +
+      calcLine('Time reduction', reduction + '%') +
+      calcLine('Remaining hrs/week', ehHoursWeek.toFixed(1) + ' hrs') +
+      calcLine('× Rate × 52 wks', fmt(ehLabourCost))
+    );
+    setTT('ehTotalCost',
+      `<strong>Total annual EH cost</strong>` +
+      calcLine('Platform licence', fmt(ehPlatformCost)) +
+      calcLine('+ Remaining labour', fmt(ehLabourCost)) +
+      calcLine('= Total', fmt(ehTotal))
+    );
+    setTT('annualSaving',
+      `<strong>Annual saving</strong>` +
+      calcLine('Manual total', fmt(totalManual)) +
+      calcLine('  Labour', fmt(annualManual)) +
+      calcLine('  Risk buffer (15%)', fmt(riskBuffer)) +
+      calcLine('  Tools est.', fmt(toolsCost)) +
+      calcLine('− EH total', fmt(ehTotal)) +
+      calcLine('= Saving', fmt(saving))
+    );
+    setTT('hoursSaved',
+      `<strong>Hours freed per year</strong>` +
+      calcLine('Annual hours', hoursYear + ' hrs') +
+      calcLine('× Time reduction', reduction + '%') +
+      calcLine('= Hours freed', Math.round(hoursSaved) + ' hrs')
+    );
+    setTT('roiVal',
+      `<strong>Return on investment</strong>` +
+      calcLine('Annual saving', fmt(saving)) +
+      calcLine('÷ Platform cost', fmt(ehPlatformCost)) +
+      calcLine('= ROI multiplier', roi.toFixed(1) + 'x')
+    );
+  }
+
+    function update() {
     const emp       = parseInt(document.getElementById('empSlider').value);
     const hours     = parseInt(document.getElementById('hoursSlider').value);
     const rate      = parseInt(document.getElementById('rateSlider').value);
@@ -1141,7 +1271,7 @@
     // Savings
     const saving     = totalManual - ehTotal;
     const hoursSaved = hoursYear * (reduction / 100);
-    const roi        = ehPlatformCost > 0 ? ((saving / ehPlatformCost) * 100) : 0;
+    const roi        = ehPlatformCost > 0 ? (saving / ehPlatformCost) : 0;
 
     // Update stat pills - manual
     animateVal(document.getElementById('weeklyManual'), fmt(weeklyManual));
@@ -1156,7 +1286,7 @@
     // Update results
     animateVal(document.getElementById('annualSaving'), fmt(saving));
     animateVal(document.getElementById('hoursSaved'), fmtHrs(hoursSaved));
-    animateVal(document.getElementById('roiVal'), fmtPct(roi) + 'x');
+    animateVal(document.getElementById('roiVal'), roi.toFixed(1) + 'x');
 
     // Verdict
     const verdictEl = document.getElementById('verdictText');
@@ -1183,6 +1313,8 @@
     setBar('bar-eh-labour', ehLabourCost, ehMax);
     document.getElementById('bar-eh-platform-val').textContent = fmt(ehPlatformCost);
     document.getElementById('bar-eh-labour-val').textContent = fmt(ehLabourCost);
+
+    updateTooltips(emp, hours, rate, reduction, ehPrice, weeklyManual, annualManual, hoursYear, riskBuffer, toolsCost, totalManual, ehPlatformCost, ehHoursWeek, ehLabourCost, ehTotal, saving, hoursSaved, roi);
   }
 
 
